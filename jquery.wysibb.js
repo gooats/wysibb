@@ -1,5 +1,6 @@
-/*! WysiBB v1.5.1 2014-03-26  
+/*! WysiBB v1.5.2 2019-01-21 
     Author: Vadim Dobroskok
+    Updated: Colton Wiens (github.com/gooats)
  */
 if (typeof (WBBLANG)=="undefined") {WBBLANG = {};}
 WBBLANG['en'] = CURLANG = {
@@ -76,7 +77,7 @@ WBBLANG['en'] = CURLANG = {
 	sm8: "Pain",
 	sm9: "Sick"
 };
-wbbdebug=true;
+wbbdebug=false;
 (function($) {
 	'use strict';
 	$.wysibb = function(txtArea,settings) {
@@ -385,7 +386,7 @@ wbbdebug=true;
 					excmd: 'fontSize',
 					exvalue: "1",
 					transform: {
-						'<font size="1">{SELTEXT}</font>':'[size=50]{SELTEXT}[/size]'
+						'<font size="1">{SELTEXT}</font>':'[size=6]{SELTEXT}[/size]'
 					}
 				},
 				fs_small: {
@@ -394,7 +395,7 @@ wbbdebug=true;
 					excmd: 'fontSize',
 					exvalue: "2",
 					transform: {
-						'<font size="2">{SELTEXT}</font>':'[size=85]{SELTEXT}[/size]'
+						'<font size="2">{SELTEXT}</font>':'[size=8]{SELTEXT}[/size]'
 					}
 				},
 				fs_normal: {
@@ -403,7 +404,7 @@ wbbdebug=true;
 					excmd: 'fontSize',
 					exvalue: "3",
 					transform: {
-						'<font size="3">{SELTEXT}</font>':'[size=100]{SELTEXT}[/size]'
+						'<font size="3">{SELTEXT}</font>':'[size=10]{SELTEXT}[/size]'
 					}
 				},
 				fs_big: {
@@ -412,7 +413,7 @@ wbbdebug=true;
 					excmd: 'fontSize',
 					exvalue: "4",
 					transform: {
-						'<font size="4">{SELTEXT}</font>':'[size=150]{SELTEXT}[/size]'
+						'<font size="4">{SELTEXT}</font>':'[size=15]{SELTEXT}[/size]'
 					}
 				},
 				fs_verybig: {
@@ -421,7 +422,7 @@ wbbdebug=true;
 					excmd: 'fontSize',
 					exvalue: "6",
 					transform: {
-						'<font size="6">{SELTEXT}</font>':'[size=200]{SELTEXT}[/size]'
+						'<font size="6">{SELTEXT}</font>':'[size=20]{SELTEXT}[/size]'
 					}
 				},
 				
@@ -970,7 +971,7 @@ wbbdebug=true;
 			//build bbcode switch button
 			//var $bbsw = $('<div class="wysibb-toolbar-container modeSwitch"><div class="wysibb-toolbar-btn" unselectable="on"><span class="btn-inner ve-tlb-bbcode" unselectable="on"></span></div></div>').appendTo(this.$toolbar);
 			var $bbsw = $(document.createElement('div')).addClass("wysibb-toolbar-container modeSwitch").html('<div class="wysibb-toolbar-btn mswitch" unselectable="on"><span class="btn-inner modesw" unselectable="on">[bbcode]</span></div>').appendTo(this.$toolbar);
-			if (this.options.bbmode==true) {$bbsw.children(".wysibb-toolbar-btn").addClass("on");}
+			if (this.options.bbmode==true) {$bbsw.children(".wysibb-toolbar-btn").addClass("on").hide();}
 			if (this.options.onlyBBmode===false) {
 				$bbsw.children(".wysibb-toolbar-btn").click($.proxy(function(e) {
 					$(e.currentTarget).toggleClass("on");
@@ -1255,16 +1256,18 @@ wbbdebug=true;
 		},
 		presskey: function(e) {
 			if (e.ctrlKey==true || e.shiftKey==true || e.altKey==true) {
-				var  metasum = ((e.ctrlKey==true) ? 1:0)+((e.shiftKey==true) ? 4:0)+((e.altKey==true) ? 7:0);
-				if (this.hotkeys["m"+metasum] && this.hotkeys["m"+metasum]["k"+e.which]) {
-					this.execCommand(this.hotkeys["m"+metasum]["k"+e.which],false);
-					e.preventDefault();
-					return false;
-				}
+                if ( $(this.txtArea).is(":focus") ) {
+                    var  metasum = ((e.ctrlKey==true) ? 1:0)+((e.shiftKey==true) ? 4:0)+((e.altKey==true) ? 7:0);
+                    if (this.hotkeys["m"+metasum] && this.hotkeys["m"+metasum]["k"+e.which]) {
+                        this.execCommand(this.hotkeys["m"+metasum]["k"+e.which],false);
+                        e.preventDefault();
+                        return false;
+                    }
+                }
 			}
 		},
 		
-		//COgdfMMAND FUNCTIONS
+		//COMMAND FUNCTIONS
 		execCommand: function(command,value) {
 			$.log("execCommand: "+command);
 			var opt = this.options.allButtons[command];
@@ -1524,8 +1527,6 @@ wbbdebug=true;
 				var rng = (this.lastRange) ? this.lastRange:this.getRange();
 				rng.deleteContents();
 				rng.insertNode(e);
-                                rng.setStartAfter(e);
-                                rng.setEndAfter(e);
 				rng.collapse(false);
 				sel.removeAllRanges();
 				sel.addRange(rng);
@@ -1810,7 +1811,7 @@ wbbdebug=true;
 		},
 		selectLastRange: function() {
 			if (this.lastRange) {
-				this.body.focus();
+				this.$editor.focus();
 				this.selectRange(this.lastRange);
 				this.lastRange=false;
 			}
